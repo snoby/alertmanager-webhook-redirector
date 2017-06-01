@@ -25,13 +25,14 @@ func (alert *AlertMgr) AlertMgr_PrintRawJSON() (err error) {
 	var out bytes.Buffer
 	err = json.Indent(&out, alert.buf, "", "  ")
 	if err != nil {
+		fmt.Println("Not able to Indent the buffer properly")
 		fmt.Print(err)
 		return err
 	}
 
-	fmt.Printf("size of data: %v\n", (out.Bytes))
+	fmt.Printf("size of data: %d\n", out.Len())
+	fmt.Printf("%s\n", out.String())
 
-	fmt.Printf("%s", out.Bytes)
 	return nil
 
 }
