@@ -1,4 +1,4 @@
-i{
+{
 	"alerts": [{
 		"annotations": {
 			"description": "99th percentile Latency for proxy requests to the kube-apiserver is higher than 1s.",
