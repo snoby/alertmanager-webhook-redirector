@@ -70,8 +70,6 @@ func (alert *AlertMgr) UnMarshallJSON() (err error) {
 	// Save the beautified JSON
 	alert.ParsedNotification = theAlert
 
-	// Lets print out some stuff.
-
 	return nil
 
 }
