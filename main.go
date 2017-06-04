@@ -24,19 +24,44 @@ func main() {
 		os.Exit(1)
 	}
 
+	authTOKEN := os.Getenv("AUTHTOKEN")
+	if authTOKEN == "" {
+		fmt.Println("You must export authTOKEN in your environment!!! exiting")
+		os.Exit(1)
+	}
+
 	// now call the alertmgr package to handle unmarshalling the data
 	var alert alertmgr.AlertMgr
 
 	fmt.Println("Loaded file")
-	err = alert.AlertMgr_LoadRawData(dat)
+	err = alert.LoadRawData(dat)
 	if err != nil {
 		fmt.Println("Not able to load data to be processed")
 		os.Exit(1)
 	}
-	err = alert.AlertMgr_PrintRawJSON()
+	err = alert.PrintRawJSON()
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
+	err = alert.UnMarshallJSON()
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(1)
 	}
 
+	var Markdown string
+	Markdown, err = alert.GenerateMarkDown()
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
+
+	sparkRoom := "Y2lzY29zcGFyazovL3VzL1JPT00vMmM1ZjYwMDAtMzk3ZS0xMWU3LTg4YzEtNGJjNjhkMWU5YWVj"
+
+	err = alert.SendToSparkRoom(authTOKEN, sparkRoom, Markdown)
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
 }
