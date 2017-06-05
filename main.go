@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/snoby/alertmanager-webhook-redirector/alertmgr"
+	"github.com/snoby/spark-pivot/alertmgr"
 )
 
 // Read data from a file
