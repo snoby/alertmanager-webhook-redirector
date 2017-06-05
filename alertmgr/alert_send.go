@@ -55,6 +55,7 @@ func (alert *AlertMgr) SendToSparkRoom(auth string, sparkRoom string, MarkDown s
 
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("Error in sending message\n %v\n", resp)
 		fmt.Println("error:", err)
 		return err
 	}

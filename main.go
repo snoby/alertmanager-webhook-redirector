@@ -8,6 +8,8 @@ import (
 	"github.com/snoby/spark-pivot/alertmgr"
 )
 
+const spark_pivot_test_room = "Y2lzY29zcGFyazovL3VzL1JPT00vNDVhMjFkZjAtNDlmZi0xMWU3LTg2NmQtOGRmOWI2ZjlhNGM1"
+
 // Read data from a file
 func main() {
 

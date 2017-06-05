@@ -10,6 +10,7 @@ import (
 type AlertMgr struct {
 	buf                []byte
 	RawJSON            string
+	BeautifiedJSON     string
 	ParsedNotification AlertManagerNative
 }
 
@@ -60,6 +61,19 @@ func (alert *AlertMgr) UnMarshallJSON() (err error) {
 	if alert.buf == nil {
 		return errors.New("AlertMgr: No data loaded.  Load data first!!!")
 	}
+
+	// Make the JSON beautified
+	var out bytes.Buffer
+	err = json.Indent(&out, alert.buf, "", "  ")
+	if err != nil {
+		fmt.Println("Not able to Indent the buffer properly")
+		fmt.Print(err)
+		return err
+	}
+	alert.BeautifiedJSON = out.String()
+
+	// Un Marshall it
+
 	var theAlert AlertManagerNative
 	err = json.Unmarshal(alert.buf, &theAlert)
 	if err != nil {
@@ -88,9 +102,9 @@ func (alert *AlertMgr) GenerateMarkDown() (Markdown string, err error) {
 	Markdown += fmt.Sprintf("* Service: %s\n", alert.ParsedNotification.CommonLabels.Service)
 	Markdown += fmt.Sprintf("* Severity: %s\n", alert.ParsedNotification.CommonLabels.Severity)
 	Markdown += "### Raw Alert\n"
-	Markdown += "```JSON\n"
-	Markdown += alert.RawJSON
-	Markdown += "```\n"
+	Markdown += "\n\n```json\n"
+	Markdown += alert.BeautifiedJSON
+	Markdown += "\n```\n"
 
 	//	fmt.Printf("%s\n", Markdown)
 
