@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/snoby/spark-pivot/alertmgr"
@@ -19,10 +18,16 @@ func main() {
 		fmt.Println("Need at exactly one file name to parse")
 		os.Exit(1)
 	}
-	fileName := os.Args[1]
-	dat, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		fmt.Println("Error: Reading file: %s", fileName)
+	//	fileName := os.Args[1]
+	//	data, err := ioutil.ReadFile(fileName)
+	//	if err != nil {
+	//		fmt.Println("Error: Reading file: %s", fileName)
+	//		os.Exit(1)
+	//	}
+	// The entire JSON payload is being passed to us as an argument
+	payload := os.Args[1]
+	if payload == "" {
+		fmt.Println("first argument didn't contain the alert message")
 		os.Exit(1)
 	}
 
@@ -36,7 +41,8 @@ func main() {
 	var alert alertmgr.AlertMgr
 
 	fmt.Println("Loaded file")
-	err = alert.LoadRawData(dat)
+	dat := []byte(payload)
+	err := alert.LoadRawData(dat)
 	if err != nil {
 		fmt.Println("Not able to load data to be processed")
 		os.Exit(1)

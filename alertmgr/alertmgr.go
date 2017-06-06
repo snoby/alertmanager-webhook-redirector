@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httputil"
+	"time"
 )
 
 type AlertMgr struct {
@@ -12,6 +16,11 @@ type AlertMgr struct {
 	RawJSON            string
 	BeautifiedJSON     string
 	ParsedNotification AlertManagerNative
+}
+
+type SparkMessage struct {
+	RoomId   string `json:"roomId"`
+	Markdown string `json:"markdown"`
 }
 
 //
@@ -94,7 +103,8 @@ func (alert *AlertMgr) UnMarshallJSON() (err error) {
 func (alert *AlertMgr) GenerateMarkDown() (Markdown string, err error) {
 	// TODO: Parse out cluster name from External URL
 	// Generate the MarkDown document that will be sent in the message to the alert room
-	Markdown += "# Cluster Alert\n"
+	t := time.Now()
+	Markdown += fmt.Sprintf("# Cluster Alert time: %s\n", t.Local())
 	Markdown += fmt.Sprintf("cluster: %s \n", alert.ParsedNotification.ExternalURL)
 	Markdown += fmt.Sprintf("## %s \n", alert.ParsedNotification.CommonAnnotations.Summary)
 	Markdown += fmt.Sprintf("[Alert URL](%s)\n", alert.ParsedNotification.Alerts[0].GeneratorURL)
@@ -109,4 +119,60 @@ func (alert *AlertMgr) GenerateMarkDown() (Markdown string, err error) {
 	//	fmt.Printf("%s\n", Markdown)
 
 	return Markdown, nil
+}
+
+// formatRequest generates ascii representation of a request
+
+func (alert *AlertMgr) SendToSparkRoom(auth string, sparkRoom string, MarkDown string) (err error) {
+
+	const PostURL string = "https://api.ciscospark.com/v1/messages"
+
+	msg := &SparkMessage{
+		RoomId:   sparkRoom,
+		Markdown: MarkDown,
+	}
+
+	body, err := json.Marshal(msg)
+	if err != nil {
+		fmt.Println("error:", err)
+		return err
+	}
+
+	// Create HTTP interface
+	client := &http.Client{}
+
+	// returns a pointer to a *Request
+	req, err := http.NewRequest("POST", "https://api.ciscospark.com/v1/messages", bytes.NewBuffer(body))
+	if err != nil {
+		fmt.Println("error:", err)
+		return err
+	}
+	token := "Bearer "
+	token += auth
+	req.Header.Add("Authorization", token)
+	req.Header.Add("Content-Type", "application/json")
+
+	// print header out for debugging
+	requestDump, err := httputil.DumpRequest(req, true)
+	if err != nil {
+		fmt.Println("error:", err)
+		return err
+	}
+	fmt.Println(string(requestDump))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Error in sending message\n %v\n", resp)
+		fmt.Println("error:", err)
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	respbody, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response respBody:", string(respbody))
+
+	return nil
 }
