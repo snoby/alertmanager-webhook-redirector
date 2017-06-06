@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/snoby/spark-pivot/alertmgr"
 )
@@ -33,7 +34,11 @@ func main() {
 
 	authTOKEN := os.Getenv("AUTHTOKEN")
 	if authTOKEN == "" {
-		fmt.Println("You must export authTOKEN in your environment!!! exiting")
+		fmt.Println("You must export AUTHTOKEN in your environment!!! below is what I found")
+		for _, e := range os.Environ() {
+			pair := strings.Split(e, "=")
+			fmt.Println(pair[0])
+		}
 		os.Exit(1)
 	}
 
