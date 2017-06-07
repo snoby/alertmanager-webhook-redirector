@@ -16,6 +16,8 @@ type AlertMgr struct {
 	RawJSON            string
 	BeautifiedJSON     string
 	ParsedNotification AlertManagerNative
+	receivers          map[string]string
+	roomID             string
 }
 
 type SparkMessage struct {
@@ -23,14 +25,51 @@ type SparkMessage struct {
 	Markdown string `json:"markdown"`
 }
 
+func (alert *AlertMgr) LoadReceiverMappings() {
+
+	alert.receivers = map[string]string{
+		"k8s_internal_cluster": "Y2lzY29zcGFyazovL3VzL1JPT00vMDgyMDJjNDAtNGFlMi0xMWU3LWI4ZTgtOGI3MDM3YmE3Nzgw",
+		"k8s_east_cluster":     "Y2lzY29zcGFyazovL3VzL1JPT00vMmM1ZjYwMDAtMzk3ZS0xMWU3LTg4YzEtNGJjNjhkMWU5YWVj",
+		"test_room":            "Y2lzY29zcGFyazovL3VzL1JPT00vNDVhMjFkZjAtNDlmZi0xMWU3LTg2NmQtOGRmOWI2ZjlhNGM1",
+	}
+}
+
 //
 // AlertMgr_LoadRawData just saves the JSON buffer to this instance.
 //
+
 func (alert *AlertMgr) LoadRawData(buf []byte) (err error) {
 	fmt.Println(" Loading buffer into AlertMgr memory")
 	alert.buf = buf
 	alert.RawJSON = string(buf)
 	return nil
+}
+
+//todo document
+func (alert *AlertMgr) SaveReceiver(receiver string) (err error) {
+
+	//
+	// Need to somehow get a list of rooms that we can correlate.
+	// and load those rooms.
+	//
+	roomID := alert.receivers[receiver]
+	if roomID == "" {
+		fmt.Println("ERROR I don't have a Spark room for %s", receiver)
+		fmt.Printf(" I know about the following: \n")
+		for key, value := range alert.receivers {
+			fmt.Println("Key:", key, "Value", value)
+		}
+		alert.roomID = ""
+		return errors.New("Setting roomID to null, as I don't know this receiver ")
+	} else {
+		alert.roomID = roomID
+	}
+	return nil
+}
+
+//todo document
+func (alert *AlertMgr) GetRoomId() (roomID string) {
+	return alert.roomID
 }
 
 //

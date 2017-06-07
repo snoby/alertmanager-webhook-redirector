@@ -15,8 +15,8 @@ func main() {
 
 	argsWithoutProg := os.Args[1:]
 
-	if len(argsWithoutProg) != 1 {
-		fmt.Println("Need at exactly one file name to parse")
+	if len(argsWithoutProg) != 2 {
+		fmt.Println("Need the JSON passed as an argument and the name of the receiver sent")
 		os.Exit(1)
 	}
 	//	fileName := os.Args[1]
@@ -32,6 +32,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	//TODO: need some sanitizing of the input here
+	receiver := os.Args[2]
+
 	authTOKEN := os.Getenv("AUTHTOKEN")
 	if authTOKEN == "" {
 		fmt.Println("You must export AUTHTOKEN in your environment!!! below is what I found")
@@ -44,6 +47,7 @@ func main() {
 
 	// now call the alertmgr package to handle unmarshalling the data
 	var alert alertmgr.AlertMgr
+	alert.LoadReceiverMappings()
 
 	fmt.Println("Loaded file")
 	dat := []byte(payload)
@@ -52,6 +56,12 @@ func main() {
 		fmt.Println("Not able to load data to be processed")
 		os.Exit(1)
 	}
+
+	err = alert.SaveReceiver(receiver)
+	if err != nil {
+		fmt.Print(err)
+	}
+
 	err = alert.PrintRawJSON()
 	if err != nil {
 		fmt.Print(err)
@@ -70,7 +80,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	sparkRoom := "Y2lzY29zcGFyazovL3VzL1JPT00vMmM1ZjYwMDAtMzk3ZS0xMWU3LTg4YzEtNGJjNjhkMWU5YWVj"
+	sparkRoom := alert.GetRoomId()
+	fmt.Printf("Sending to roomID: %s because receiver was: %s \n", sparkRoom, receiver)
 
 	err = alert.SendToSparkRoom(authTOKEN, sparkRoom, Markdown)
 	if err != nil {
