@@ -44,6 +44,7 @@ func main() {
 		}
 		os.Exit(1)
 	}
+	fmt.Println("payload, receiver and authTOKEN received and accepted, parsing...")
 
 	// now call the alertmgr package to handle unmarshalling the data
 	var alert alertmgr.AlertMgr
