@@ -1,0 +1,19 @@
+#
+# simple container that builds a binary fo spark-pivot
+#
+#
+FROM golang:1.8.1
+
+ENV         GOPATH /go
+ENV         SRCPATH ${GOPATH}/src/github.com/snoby
+ENV         WEBHOOK_VERSION 2.6.4
+WORKDIR     /go/src/github.com/snoby/spark-pivot
+
+COPY main.go .
+RUN mkdir alertmgr
+COPY alertmgr/*.go alertmgr/
+
+RUN ls -lah
+RUN go get -d -v
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o spark-pivot .
