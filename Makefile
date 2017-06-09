@@ -14,6 +14,9 @@ all: darwin linux
 clean:
 	rm -rf built
 
+build: spark-pivot
+	go build -v
+
 ##### LINUX BUILDS #####
 linux: built/darwin_amd64.tar.gz built/linux_amd64.tar.gz
 
@@ -29,4 +32,5 @@ darwin: built/darwin_amd64.tar.gz
 built/darwin_amd64.tar.gz: $(sources)
 	$(call built,darwin,amd64,)
 	$(call tar,darwin,amd64)
+
 

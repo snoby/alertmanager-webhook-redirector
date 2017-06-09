@@ -9,9 +9,9 @@ ENV         SRCPATH ${GOPATH}/src/github.com/snoby
 WORKDIR     /go/src/github.com/snoby/spark-pivot
 RUN         mkdir /output
 
-COPY main.go .
+COPY ../main.go .
 RUN mkdir alertmgr
-COPY alertmgr/*.go alertmgr/
+COPY ../alertmgr/*.go alertmgr/
 
 RUN ls -lah
 RUN go get -d -v
