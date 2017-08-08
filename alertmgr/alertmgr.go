@@ -30,6 +30,8 @@ func (alert *AlertMgr) LoadReceiverMappings() {
 	alert.receivers = map[string]string{
 		"k8s_internal_cluster": "Y2lzY29zcGFyazovL3VzL1JPT00vMDgyMDJjNDAtNGFlMi0xMWU3LWI4ZTgtOGI3MDM3YmE3Nzgw",
 		"k8s_east_cluster":     "Y2lzY29zcGFyazovL3VzL1JPT00vMmM1ZjYwMDAtMzk3ZS0xMWU3LTg4YzEtNGJjNjhkMWU5YWVj",
+		"k8s_sparkbot_cluster": "Y2lzY29zcGFyazovL3VzL1JPT00vZjg3YTk0NTAtN2M2YS0xMWU3LThkMWMtNDU2YWNjMzFkNGNk",
+		"k8s_eu_cluster":       "Y2lzY29zcGFyazovL3VzL1JPT00vYzhlZDRmYjAtN2M2Yi0xMWU3LTg4OWQtMmRlYTUxMGVhMzAx",
 		"test_room":            "Y2lzY29zcGFyazovL3VzL1JPT00vNDVhMjFkZjAtNDlmZi0xMWU3LTg2NmQtOGRmOWI2ZjlhNGM1",
 	}
 }
@@ -54,7 +56,7 @@ func (alert *AlertMgr) SaveReceiver(receiver string) (err error) {
 	//
 	roomID := alert.receivers[receiver]
 	if roomID == "" {
-		fmt.Println("ERROR I don't have a Spark room for %s", receiver)
+		fmt.Printf("ERROR I don't have a Spark room for %s", receiver)
 		fmt.Printf(" I know about the following: \n")
 		for key, value := range alert.receivers {
 			fmt.Println("Key:", key, "Value", value)
